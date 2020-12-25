@@ -3,6 +3,8 @@ package com.example.student;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -58,29 +60,46 @@ public class UpdateStudent extends AppCompatActivity {
         findViewById(R.id.btn_update).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Student student = new Student(
-                        "",
-                        name.getText().toString(),
-                        email.getText().toString(),
-                        myBundle.getString("mssv"),
-                        birth.getDayOfMonth() + "-" + birth.getMonth() + "-" + birth.getYear(),
-                        address.getText().toString(),
-                        false
-                );
 
-                boolean r = StudentDao.getInstance().update(""+getFilesDir(), student);
+                AlertDialog alertDialog = new AlertDialog.Builder(UpdateStudent.this).create();
+                alertDialog.setTitle("Alert");
+                alertDialog.setMessage("ARE YOU SURE ABOUT THAT!!!");
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "YES",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Student student = new Student(
+                                        "",
+                                        name.getText().toString(),
+                                        email.getText().toString(),
+                                        myBundle.getString("mssv"),
+                                        birth.getDayOfMonth() + "-" + birth.getMonth() + "-" + birth.getYear(),
+                                        address.getText().toString(),
+                                        false
+                                );
 
-                if (r) {
-                    myBundle.putString("name", student.getName());
-                    myBundle.putString("email", student.getEmail());
-                    myBundle.putString("address", student.getAddress());
-                    myBundle.putString("birth", student.getBirth());
-                    caller.putExtras(myBundle);
-                    setResult(Activity.RESULT_OK, caller);
-                }else {
-                    setResult(Activity.RESULT_CANCELED, caller);
-                }
-                finish();
+                                boolean r = StudentDao.getInstance().update(""+getFilesDir(), student);
+
+                                if (r) {
+                                    myBundle.putString("name", student.getName());
+                                    myBundle.putString("email", student.getEmail());
+                                    myBundle.putString("address", student.getAddress());
+                                    myBundle.putString("birth", student.getBirth());
+                                    caller.putExtras(myBundle);
+                                    setResult(Activity.RESULT_OK, caller);
+                                }else {
+                                    setResult(Activity.RESULT_CANCELED, caller);
+                                }
+                                finish();
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "NO",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
             }
         });
 

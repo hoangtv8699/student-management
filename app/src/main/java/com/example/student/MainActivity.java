@@ -1,6 +1,8 @@
 package com.example.student;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -175,23 +177,55 @@ public class MainActivity extends AppCompatActivity {
             myIntent.putExtras(myBundle);
             startActivityForResult(myIntent, 1122);
         }else if(item.getTitle().equals("delete")){
-            boolean r = StudentDao.getInstance().deleteStudent(""+getFilesDir(), selectedStudent);
-            if (r) {
-                items.remove(selectedStudent);
-                adapter.notifyDataSetChanged();
-            }
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog.setTitle("Alert");
+            alertDialog.setMessage("ARE YOU SURE ABOUT THAT!!!");
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "YES",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            boolean r = StudentDao.getInstance().deleteStudent(""+getFilesDir(), selectedStudent);
+                            if (r) {
+                                items.remove(selectedStudent);
+                                adapter.notifyDataSetChanged();
+                            }
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "NO",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
         }else if(item.getTitle().equals("delete selected")){
-            for (int i = 0; i < items.size(); i ++){
-                Student student = items.get(i);
-                if(student.isChecked()){
-                    boolean r = StudentDao.getInstance().deleteStudent(""+getFilesDir(), student);
-                    if (r) {
-                        items.remove(student);
-                        i -= 1;
-                    }
-                }
-            }
-            adapter.notifyDataSetChanged();
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog.setTitle("Alert");
+            alertDialog.setMessage("ARE YOU SURE ABOUT THAT!!!");
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "YES",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            for (int i = 0; i < items.size(); i ++){
+                                Student student = items.get(i);
+                                if(student.isChecked()){
+                                    boolean r = StudentDao.getInstance().deleteStudent(""+getFilesDir(), student);
+                                    if (r) {
+                                        items.remove(student);
+                                        i -= 1;
+                                    }
+                                }
+                            }
+                            adapter.notifyDataSetChanged();
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "NO",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
         }else{
             return false;
         }
